@@ -25,6 +25,7 @@ class AppTheme {
   static const Color chineseCategory = Color(0xFFFF7043); // 橙色，语文模块
   static const Color englishNumbersCategory = Color(0xFF00BCD4); // 青色，英语数字
   static const Color englishWordsCategory = Color(0xFF9B59B6); // 紫色，英语词汇
+  static const Color mathCategory = Color(0xFF5C6BC0); // 靛蓝色，数学模块
 
   static Color getCategoryColor(String category) {
     switch (category) {

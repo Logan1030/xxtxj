@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart';
 import '../app.dart';
-import '../data/words_data.dart';
-import '../data/pinyin_data.dart';
-import '../utils/storage_helper.dart';
-import 'game_screen.dart';
-import 'chinese_game_screen.dart';
-import 'english_numbers_game_screen.dart';
-import 'english_words_game_screen.dart';
+import '../services/progress_service.dart';
+import 'learning_map_screen.dart';
 
-/// 首页 - 关卡选择
+/// 首页 - 三大模块入口 + 进度地图风格
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -18,7 +13,11 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _totalStars = 0;
-  Map<String, int> _progress = {};
+  Map<String, int> _categoryStars = {
+    'english': 0,
+    'chinese': 0,
+    'math': 0,
+  };
 
   @override
   void initState() {
@@ -27,117 +26,68 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _loadProgress() async {
-    final total = await StorageHelper.getTotalStars();
-    final progress = await StorageHelper.getAllProgress();
+    final total = await ProgressService.getTotalStars();
+    final english = await ProgressService.getCategoryStars('english');
+    final chinese = await ProgressService.getCategoryStars('chinese');
+    final math = await ProgressService.getCategoryStars('math');
+
     if (mounted) {
       setState(() {
         _totalStars = total;
-        _progress = progress;
+        _categoryStars = {
+          'english': english,
+          'chinese': chinese,
+          'math': math,
+        };
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // 所有英文学习类别
-    final categories = [
-      'colors',
-      'numbers',
-      'animals',
-      'foods',
-      'body',
-      'clothes',
-      'vehicles',
-      'nature',
-      'family',
-      'emotions',
-      'actions',
-      'shapes',
-      'time',
-      'chinese',
-      'english_numbers',
-      'english_words',
-    ];
-
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
       body: SafeArea(
         child: Column(
           children: [
             // 顶部标题和星星
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '学习小游戏',
-                        style: TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                          color: AppTheme.primaryColor,
-                        ),
-                      ),
-                      Text(
-                        '一起学习吧！',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppTheme.accentColor,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(
-                          Icons.star,
-                          color: Colors.orange,
-                          size: 28,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          '$_totalStars',
-                          style: const TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.orange,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // 主题卡片网格 - 使用3列布局
+            _buildHeader(),
+            // 三模块入口卡片
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
-                    childAspectRatio: 0.85,
-                  ),
-                  itemCount: categories.length,
-                  itemBuilder: (context, index) {
-                    final category = categories[index];
-                    return _buildCategoryCard(category);
-                  },
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // 英语模块
+                    _buildModuleCard(
+                      emoji: '🔤',
+                      name: '英语学习',
+                      color: AppTheme.englishNumbersCategory,
+                      stars: _categoryStars['english'] ?? 0,
+                      onTap: () => _navigateToLearningMap('english'),
+                    ),
+                    const SizedBox(height: 16),
+
+                    // 语文模块
+                    _buildModuleCard(
+                      emoji: '🇨🇳',
+                      name: '语文学习',
+                      color: AppTheme.chineseCategory,
+                      stars: _categoryStars['chinese'] ?? 0,
+                      onTap: () => _navigateToLearningMap('chinese'),
+                    ),
+                    const SizedBox(height: 16),
+
+                    // 数学模块
+                    _buildModuleCard(
+                      emoji: '🔢',
+                      name: '数学学习',
+                      color: AppTheme.mathCategory,
+                      stars: _categoryStars['math'] ?? 0,
+                      onTap: () => _navigateToLearningMap('math'),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -159,88 +109,146 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildCategoryCard(String category) {
-    final color = AppTheme.getCategoryColor(category);
-    final String emoji;
-    final String name;
-    final int stars;
+  Widget _buildHeader() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '小小探索家',
+                style: TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.primaryColor,
+                ),
+              ),
+              Text(
+                '快乐学习！',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey,
+                ),
+              ),
+            ],
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 8,
+            ),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [AppTheme.accentColor, AppTheme.accentColor.withValues(alpha: 0.7)],
+              ),
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: AppTheme.accentColor.withValues(alpha: 0.4),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.star,
+                  color: Colors.orange,
+                  size: 28,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  '$_totalStars',
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.orange,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
-    if (category == 'chinese') {
-      emoji = getChineseModuleEmoji();
-      name = getChineseModuleName();
-      // 语文模块显示所有子模块的累计星星
-      int totalChineseStars = 0;
-      for (var subCat in getChineseSubCategories()) {
-        totalChineseStars += _progress[subCat] ?? 0;
-      }
-      stars = totalChineseStars;
-    } else if (category == 'english_numbers') {
-      emoji = '🔤';
-      name = '英语数字';
-      stars = _progress[category] ?? 0;
-    } else if (category == 'english_words') {
-      emoji = '💪';
-      name = '英语词汇';
-      stars = _progress[category] ?? 0;
-    } else {
-      emoji = getCategoryEmoji(category);
-      name = getCategoryName(category);
-      stars = _progress[category] ?? 0;
-    }
-
+  Widget _buildModuleCard({
+    required String emoji,
+    required String name,
+    required Color color,
+    required int stars,
+    required VoidCallback onTap,
+  }) {
     return GestureDetector(
-      onTap: () => _navigateToGame(category),
+      onTap: onTap,
       child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [color, color.withValues(alpha: 0.7)],
           ),
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(
               color: color.withValues(alpha: 0.4),
-              blurRadius: 8,
-              offset: const Offset(0, 4),
+              blurRadius: 12,
+              offset: const Offset(0, 6),
             ),
           ],
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: Row(
           children: [
             Text(
               emoji,
-              style: const TextStyle(fontSize: 40),
+              style: const TextStyle(fontSize: 48),
             ),
-            const SizedBox(height: 8),
-            Text(
-              name,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+            const SizedBox(width: 20),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    _getModuleSubtitle(name),
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.white70,
+                    ),
+                  ),
+                ],
               ),
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: 4),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
                 color: Colors.white.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(16),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.star, color: Colors.amber, size: 14),
-                  const SizedBox(width: 2),
+                  const Icon(Icons.star, color: Colors.amber, size: 20),
+                  const SizedBox(width: 4),
                   Text(
                     '$stars',
                     style: const TextStyle(
-                      fontSize: 12,
+                      fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
@@ -248,42 +256,38 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ),
+            const SizedBox(width: 8),
+            const Icon(
+              Icons.arrow_forward_ios,
+              color: Colors.white,
+              size: 20,
+            ),
           ],
         ),
       ),
     );
   }
 
-  void _navigateToGame(String category) {
-    if (category == 'chinese') {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const ChineseGameScreen(),
-        ),
-      ).then((_) => _loadProgress());
-    } else if (category == 'english_numbers') {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const EnglishNumbersGameScreen(),
-        ),
-      ).then((_) => _loadProgress());
-    } else if (category == 'english_words') {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const EnglishWordsGameScreen(),
-        ),
-      ).then((_) => _loadProgress());
-    } else {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => GameScreen(category: category),
-        ),
-      ).then((_) => _loadProgress());
+  String _getModuleSubtitle(String name) {
+    switch (name) {
+      case '英语学习':
+        return '数字 · 词汇';
+      case '语文学习':
+        return '拼音 · 声调';
+      case '数学学习':
+        return '数字 · 加减法';
+      default:
+        return '';
     }
+  }
+
+  void _navigateToLearningMap(String category) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => LearningMapScreen(category: category),
+      ),
+    ).then((_) => _loadProgress());
   }
 
   void _showResetDialog() {
@@ -299,7 +303,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           ElevatedButton(
             onPressed: () async {
-              await StorageHelper.resetProgress();
+              await ProgressService.resetAllProgress();
               await _loadProgress();
               if (mounted) {
                 Navigator.pop(context);
