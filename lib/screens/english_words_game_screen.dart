@@ -2,7 +2,10 @@ import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import '../app.dart';
-import '../data/english_words_data.dart';
+import '../data/english_words_body_data.dart';
+import '../data/english_words_animals_easy_data.dart';
+import '../data/english_words_colors_data.dart';
+import '../data/english_words_animals_hard_data.dart';
 import '../models/english_word_model.dart';
 import '../services/audio_service.dart';
 import '../services/progress_service.dart';
@@ -12,9 +15,14 @@ import '../widgets/matching_card.dart';
 import '../widgets/star_rating.dart';
 import '../widgets/progress_bar.dart';
 
-/// 英语身体部位和形容词学习游戏页面
+/// 英语词汇学习游戏页面
 class EnglishWordsGameScreen extends StatefulWidget {
-  const EnglishWordsGameScreen({super.key});
+  final String subCategory;
+
+  const EnglishWordsGameScreen({
+    super.key,
+    required this.subCategory,
+  });
 
   @override
   State<EnglishWordsGameScreen> createState() =>
@@ -23,6 +31,37 @@ class EnglishWordsGameScreen extends StatefulWidget {
 
 class _EnglishWordsGameScreenState extends State<EnglishWordsGameScreen> {
   final AudioService _audioService = AudioService();
+
+  // 根据subCategory获取当前关卡的数据
+  List<EnglishWordModel> get _currentData {
+    switch (widget.subCategory) {
+      case 'english_words_body':
+        return englishWordsBodyData;
+      case 'english_words_animals_easy':
+        return englishWordsAnimalsEasyData;
+      case 'english_words_colors':
+        return englishWordsColorsData;
+      case 'english_words_animals_hard':
+        return englishWordsAnimalsHardData;
+      default:
+        return englishWordsBodyData;
+    }
+  }
+
+  String get _title {
+    switch (widget.subCategory) {
+      case 'english_words_body':
+        return '身体部位';
+      case 'english_words_animals_easy':
+        return '动物小词';
+      case 'english_words_colors':
+        return '颜色形状';
+      case 'english_words_animals_hard':
+        return '动物大词';
+      default:
+        return '英语词汇';
+    }
+  }
 
   // 当前模式：learn(闪卡), match(配对), spell(拼写)
   String _currentMode = 'learn';
@@ -69,7 +108,7 @@ class _EnglishWordsGameScreenState extends State<EnglishWordsGameScreen> {
       backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
         backgroundColor: const Color(0xFF9B59B6),
-        title: const Text('英语词汇学习'),
+        title: Text(_title),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
@@ -164,18 +203,18 @@ class _EnglishWordsGameScreenState extends State<EnglishWordsGameScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: ProgressBar(
             current: _currentCardIndex + 1,
-            total: englishWordsData.length,
+            total: _currentData.length,
             color: const Color(0xFF9B59B6),
           ),
         ),
         const SizedBox(height: 8),
         Text(
-          '${_currentCardIndex + 1} / ${englishWordsData.length}',
+          '${_currentCardIndex + 1} / ${_currentData.length}',
           style: const TextStyle(fontSize: 16, color: Colors.grey),
         ),
         Expanded(
           child: Center(
-            child: _buildFlashcard(englishWordsData[_currentCardIndex]),
+            child: _buildFlashcard(_currentData[_currentCardIndex]),
           ),
         ),
         _buildLearnNavigation(),
@@ -273,11 +312,11 @@ class _EnglishWordsGameScreenState extends State<EnglishWordsGameScreen> {
             icon: Icons.play_arrow,
             label: '听发音',
             onTap: () {
-              _audioService.speak(englishWordsData[_currentCardIndex].word);
+              _audioService.speak(_currentData[_currentCardIndex].word);
             },
             color: AppTheme.secondaryColor,
           ),
-          if (_currentCardIndex < englishWordsData.length - 1)
+          if (_currentCardIndex < _currentData.length - 1)
             _buildNavButton(
               icon: Icons.arrow_forward,
               label: '下一个',
@@ -308,7 +347,7 @@ class _EnglishWordsGameScreenState extends State<EnglishWordsGameScreen> {
   void _initMatchingGame() {
     _matchingItems = [];
     int id = 0;
-    final selectedWords = englishWordsData.take(4).toList();
+    final selectedWords = _currentData.take(4).toList();
 
     for (var word in selectedWords) {
       _matchingItems.add(_MatchingItem(
@@ -462,15 +501,22 @@ class _EnglishWordsGameScreenState extends State<EnglishWordsGameScreen> {
     int stars = accuracy >= 0.8 ? 3 : (accuracy >= 0.5 ? 2 : 1);
     _audioService.speakStars(stars);
     _saveProgress(stars);
-    // 解锁下一关（英语词汇是英语模块的第2关）
-    ProgressService.unlockNextLevelByCategory('english', 2);
+    // 解锁下一关
+    final levelMap = {
+      'english_words_body': 2,
+      'english_words_animals_easy': 3,
+      'english_words_colors': 4,
+      'english_words_animals_hard': 5,
+    };
+    final currentLevel = levelMap[widget.subCategory] ?? 2;
+    ProgressService.unlockNextLevelByCategory('english', currentLevel);
     _showCompletionDialog(stars);
   }
 
   Future<void> _saveProgress(int stars) async {
-    final currentStars = await StorageHelper.getStars('english_words');
+    final currentStars = await StorageHelper.getStars(widget.subCategory);
     if (stars > currentStars) {
-      await StorageHelper.saveStars('english_words', stars);
+      await StorageHelper.saveStars(widget.subCategory, stars);
     }
   }
 
@@ -484,7 +530,7 @@ class _EnglishWordsGameScreenState extends State<EnglishWordsGameScreen> {
   }
 
   void _setupSpellLetters() {
-    final current = englishWordsData[_spellIndex];
+    final current = _currentData[_spellIndex];
     _selectedIndices = [];
     _spellAttempts = 0;
 
@@ -499,7 +545,7 @@ class _EnglishWordsGameScreenState extends State<EnglishWordsGameScreen> {
   }
 
   Widget _buildSpellMode() {
-    final current = englishWordsData[_spellIndex];
+    final current = _currentData[_spellIndex];
     final targetLength = current.letters.length;
 
     return Column(
@@ -511,7 +557,7 @@ class _EnglishWordsGameScreenState extends State<EnglishWordsGameScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                '第 ${_spellIndex + 1} / ${englishWordsData.length} 题',
+                '第 ${_spellIndex + 1} / ${_currentData.length} 题',
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -526,7 +572,7 @@ class _EnglishWordsGameScreenState extends State<EnglishWordsGameScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: ProgressBar(
             current: _spellIndex,
-            total: englishWordsData.length,
+            total: _currentData.length,
             color: const Color(0xFFFFE66D),
           ),
         ),
@@ -667,12 +713,12 @@ class _EnglishWordsGameScreenState extends State<EnglishWordsGameScreen> {
   }
 
   bool hasAllCorrect() {
-    if (_selectedIndices.length != englishWordsData[_spellIndex].letters.length) {
+    if (_selectedIndices.length != _currentData[_spellIndex].letters.length) {
       return false;
     }
     for (int i = 0; i < _selectedIndices.length; i++) {
       final selectedLetter = _availableLetters[_selectedIndices[i]].toLowerCase();
-      final targetLetter = englishWordsData[_spellIndex].letters[i].toLowerCase();
+      final targetLetter = _currentData[_spellIndex].letters[i].toLowerCase();
       if (selectedLetter != targetLetter) {
         return false;
       }
@@ -687,7 +733,7 @@ class _EnglishWordsGameScreenState extends State<EnglishWordsGameScreen> {
       _selectedIndices.add(index);
     });
 
-    if (_selectedIndices.length == englishWordsData[_spellIndex].letters.length) {
+    if (_selectedIndices.length == _currentData[_spellIndex].letters.length) {
       if (hasAllCorrect()) {
         _spellStars++;
         _audioService.playCheerSound();
@@ -701,7 +747,7 @@ class _EnglishWordsGameScreenState extends State<EnglishWordsGameScreen> {
         _spellAttempts++;
         if (_spellAttempts >= 3) {
           // 错题加入错题本
-          _wrongWords.add(englishWordsData[_spellIndex]);
+          _wrongWords.add(_currentData[_spellIndex]);
           _audioService.speak('skip');
           Future.delayed(const Duration(milliseconds: 500), () {
             if (mounted) {
@@ -719,7 +765,7 @@ class _EnglishWordsGameScreenState extends State<EnglishWordsGameScreen> {
   }
 
   void _nextSpellWord() {
-    if (_spellIndex < englishWordsData.length - 1) {
+    if (_spellIndex < _currentData.length - 1) {
       setState(() {
         _spellIndex++;
         _setupSpellLetters();
@@ -786,7 +832,7 @@ class _EnglishWordsGameScreenState extends State<EnglishWordsGameScreen> {
     _rapidIndex = 0;
     _rapidCorrect = 0;
     _rapidTimes = [];
-    _rapidQuestions = List.from(englishWordsData)..shuffle(Random());
+    _rapidQuestions = List.from(_currentData)..shuffle(Random());
     _rapidQuestions = _rapidQuestions.take(10).toList();
     _setupRapidQuestion();
   }

@@ -188,10 +188,14 @@ class _LearningMapScreenState extends State<LearningMapScreen> {
         ).then((_) => _loadLevels());
         break;
       case 'english_words':
+      case 'english_words_body':
+      case 'english_words_animals_easy':
+      case 'english_words_colors':
+      case 'english_words_animals_hard':
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => const EnglishWordsGameScreen(),
+            builder: (context) => EnglishWordsGameScreen(subCategory: level.subCategory),
           ),
         ).then((_) => _loadLevels());
         break;
