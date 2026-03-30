@@ -49,10 +49,10 @@ class ProgressService {
     await _prefs?.setInt(_totalStarsKey, total);
   }
 
-  /// 获取最高解锁关卡序号
+  /// 获取最高解锁关卡序号（默认1，第一关默认解锁）
   static Future<int> getHighestUnlockedLevel() async {
     await init();
-    return _prefs?.getInt(_highestLevelKey) ?? 0;
+    return _prefs?.getInt(_highestLevelKey) ?? 1;
   }
 
   /// 解锁下一关
