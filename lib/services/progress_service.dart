@@ -10,6 +10,7 @@ class ProgressService {
   static const String _levelStarsPrefix = 'level_stars_';
   static const String _totalStarsKey = 'total_stars';
   static const String _highestLevelKey = 'highest_level';
+  static const String _highestLevelByCategoryPrefix = 'highest_level_';
   static const String _currentStreakKey = 'current_streak';
   static const String _gameModeKey = 'game_mode_';
 
@@ -55,12 +56,27 @@ class ProgressService {
     return _prefs?.getInt(_highestLevelKey) ?? 1;
   }
 
-  /// 解锁下一关
+  /// 获取某个类别的最高解锁关卡序号
+  static Future<int> getHighestUnlockedLevelByCategory(String category) async {
+    await init();
+    return _prefs?.getInt('$_highestLevelByCategoryPrefix$category') ?? 1;
+  }
+
+  /// 解锁下一关（全局）
   static Future<void> unlockNextLevel(int currentLevel) async {
     await init();
     final highest = await getHighestUnlockedLevel();
     if (currentLevel >= highest) {
       await _prefs?.setInt(_highestLevelKey, currentLevel + 1);
+    }
+  }
+
+  /// 解锁某个类别的下一关
+  static Future<void> unlockNextLevelByCategory(String category, int currentLevel) async {
+    await init();
+    final highest = await getHighestUnlockedLevelByCategory(category);
+    if (currentLevel >= highest) {
+      await _prefs?.setInt('$_highestLevelByCategoryPrefix$category', currentLevel + 1);
     }
   }
 
@@ -97,19 +113,17 @@ class ProgressService {
   /// 获取所有关卡进度
   static Future<List<LevelModel>> getAllLevelsProgress() async {
     await init();
-    final highestUnlocked = await getHighestUnlockedLevel();
     final List<LevelModel> levels = [];
 
     for (var level in LevelData.allLevels) {
       final stars = await getLevelStars(level.subCategory);
       LevelStatus status;
 
-      if (level.levelNumber < highestUnlocked || stars > 0) {
+      // 所有关卡都直接解锁
+      if (stars > 0) {
         status = LevelStatus.completed;
-      } else if (level.levelNumber == highestUnlocked) {
-        status = LevelStatus.current;
       } else {
-        status = LevelStatus.locked;
+        status = LevelStatus.current;
       }
 
       levels.add(level.copyWith(status: status, stars: stars));
@@ -127,6 +141,10 @@ class ProgressService {
     await _prefs?.setInt(_totalStarsKey, 0);
     await _prefs?.setInt(_highestLevelKey, 0);
     await _prefs?.setInt(_currentStreakKey, 0);
+    // 清除所有类别的最高关卡记录
+    await _prefs?.remove('${_highestLevelByCategoryPrefix}english');
+    await _prefs?.remove('${_highestLevelByCategoryPrefix}chinese');
+    await _prefs?.remove('${_highestLevelByCategoryPrefix}math');
   }
 
   /// 获取模块的总星星数
@@ -142,19 +160,17 @@ class ProgressService {
   /// 获取某个模块的关卡进度列表
   static Future<List<LevelModel>> getLevelsByCategory(String category) async {
     await init();
-    final highestUnlocked = await getHighestUnlockedLevel();
     final List<LevelModel> levels = [];
 
     for (var level in LevelData.getLevelsByCategory(category)) {
       final stars = await getLevelStars(level.subCategory);
       LevelStatus status;
 
-      if (level.levelNumber < highestUnlocked || stars > 0) {
+      // 所有关卡都直接解锁
+      if (stars > 0) {
         status = LevelStatus.completed;
-      } else if (level.levelNumber == highestUnlocked) {
-        status = LevelStatus.current;
       } else {
-        status = LevelStatus.locked;
+        status = LevelStatus.current;
       }
 
       levels.add(level.copyWith(status: status, stars: stars));

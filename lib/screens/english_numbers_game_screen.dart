@@ -5,6 +5,7 @@ import '../app.dart';
 import '../data/english_numbers_data.dart';
 import '../models/english_number_model.dart';
 import '../services/audio_service.dart';
+import '../services/progress_service.dart';
 import '../utils/storage_helper.dart';
 import '../widgets/letter_tile_widget.dart';
 import '../widgets/matching_card.dart';
@@ -460,6 +461,8 @@ class _EnglishNumbersGameScreenState extends State<EnglishNumbersGameScreen> {
     int stars = accuracy >= 0.8 ? 3 : (accuracy >= 0.5 ? 2 : 1);
     _audioService.speakStars(stars);
     _saveProgress(stars);
+    // 解锁下一关（英语数字是英语模块的第1关）
+    ProgressService.unlockNextLevelByCategory('english', 1);
     _showCompletionDialog(stars);
   }
 
