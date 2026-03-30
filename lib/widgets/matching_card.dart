@@ -47,6 +47,11 @@ class _MatchingCardState extends State<MatchingCard>
   @override
   void didUpdateWidget(MatchingCard oldWidget) {
     super.didUpdateWidget(oldWidget);
+    // 配对成功时，确保动画保持在完成位置
+    if (widget.isMatched && !oldWidget.isMatched) {
+      _controller.value = 1.0;
+    }
+    // 正常翻转动画（仅在未匹配时）
     if (widget.isFlipped != oldWidget.isFlipped && !widget.isMatched) {
       if (widget.isFlipped) {
         _controller.forward();
