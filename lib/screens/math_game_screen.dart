@@ -1269,7 +1269,7 @@ class _MathSubCategoryScreenState extends State<MathSubCategoryScreen> {
   }
 
   Future<void> _saveProgress(int stars) async {
-    await ProgressService.saveLevelStars('math_${widget.category}', stars);
+    await ProgressService.saveLevelStars(widget.category, stars);
   }
 
   void _showCompletionDialog(int stars) {
