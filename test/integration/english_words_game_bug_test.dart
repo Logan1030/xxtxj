@@ -166,7 +166,7 @@ void main() {
       // Build the English Words Game Screen
       await tester.pumpWidget(
         const MaterialApp(
-          home: EnglishWordsGameScreen(),
+          home: EnglishWordsGameScreen(subCategory: 'english_words_body'),
         ),
       );
 

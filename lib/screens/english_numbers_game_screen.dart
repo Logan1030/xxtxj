@@ -467,10 +467,7 @@ class _EnglishNumbersGameScreenState extends State<EnglishNumbersGameScreen> {
   }
 
   Future<void> _saveProgress(int stars) async {
-    final currentStars = await StorageHelper.getStars('english_numbers');
-    if (stars > currentStars) {
-      await StorageHelper.saveStars('english_numbers', stars);
-    }
+    await ProgressService.saveLevelStars('english_numbers', stars);
   }
 
   // ==================== 拼写模式 ====================

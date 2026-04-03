@@ -4,7 +4,7 @@ import '../app.dart';
 import '../data/pinyin_data.dart';
 import '../models/pinyin_model.dart';
 import '../services/audio_service.dart';
-import '../utils/storage_helper.dart';
+import '../services/progress_service.dart';
 import '../widgets/matching_card.dart';
 import '../widgets/star_rating.dart';
 import '../widgets/progress_bar.dart';
@@ -582,10 +582,7 @@ class _PinyinGameScreenState extends State<PinyinGameScreen> {
   }
 
   Future<void> _saveProgress(int stars) async {
-    final currentStars = await StorageHelper.getStars(widget.category);
-    if (stars > currentStars) {
-      await StorageHelper.saveStars(widget.category, stars);
-    }
+    await ProgressService.saveLevelStars(widget.category, stars);
   }
 
   void _showCompletionDialog(int stars) {

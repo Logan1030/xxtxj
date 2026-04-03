@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../app.dart';
 import '../data/math_data.dart';
-import '../utils/storage_helper.dart';
+import '../services/progress_service.dart';
 import '../widgets/letter_tile_widget.dart';
 import '../widgets/matching_card.dart';
 import '../widgets/star_rating.dart';
@@ -1269,10 +1269,7 @@ class _MathSubCategoryScreenState extends State<MathSubCategoryScreen> {
   }
 
   Future<void> _saveProgress(int stars) async {
-    final currentStars = await StorageHelper.getStars('math_${widget.category}');
-    if (stars > currentStars) {
-      await StorageHelper.saveStars('math_${widget.category}', stars);
-    }
+    await ProgressService.saveLevelStars('math_${widget.category}', stars);
   }
 
   void _showCompletionDialog(int stars) {

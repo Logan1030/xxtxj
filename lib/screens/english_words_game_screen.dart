@@ -514,10 +514,7 @@ class _EnglishWordsGameScreenState extends State<EnglishWordsGameScreen> {
   }
 
   Future<void> _saveProgress(int stars) async {
-    final currentStars = await StorageHelper.getStars(widget.subCategory);
-    if (stars > currentStars) {
-      await StorageHelper.saveStars(widget.subCategory, stars);
-    }
+    await ProgressService.saveLevelStars(widget.subCategory, stars);
   }
 
   // ==================== 拼写模式 ====================
