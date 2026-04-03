@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>小小探索家 - 功能流程图</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #F0F4F8;
+      --card: #FFFFFF;
+      --text: #2D3748;
+      --text-light: #718096;
+      --accent-red: #FF6B6B;
+      --accent-teal: #4ECDC4;
+      --accent-yellow: #FFE66D;
+      --accent-blue: #4A90D9;
+      --accent-purple: #9B59B6;
+      --accent-orange: #FF7043;
+      --accent-indigo: #5C6BC0;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: clamp(1rem, 3vw, 2rem);
+    }
+
+    header {
+      text-align: center;
+      padding: 1.5rem 0 2rem;
+    }
+    header h1 {
+      font-size: clamp(1.75rem, 5vw, 3rem);
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent-red), var(--accent-teal), var(--accent-yellow));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+    }
+    header p {
+      font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+      color: var(--text-light);
+    }
+
+    .diagram-card {
+      background: var(--card);
+      border-radius: 1.5rem;
+      padding: clamp(1.5rem, 4vw, 3rem);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+      margin-bottom: 2rem;
+    }
+    .diagram-card h2 {
+      font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid var(--bg);
+    }
+
+    .mermaid {
+      display: flex;
+      justify-content: center;
+      overflow-x: auto;
+      padding: 1rem 0;
+    }
+    .mermaid svg {
+      max-width: 100%;
+      height: auto;
+    }
+
+    .diagram-card.module-flow h2 { color: var(--accent-blue); }
+    .diagram-card.game-flow h2 { color: var(--accent-teal); }
+    .diagram-card.progress-flow h2 { color: var(--accent-purple); }
+
+    footer {
+      text-align: center;
+      padding: 1rem;
+      color: var(--text-light);
+      font-size: 0.85rem;
+    }
+  </style>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'base',
+      themeVariables: {
+        primaryColor: '#E8F4F8',
+        primaryTextColor: '#2D3748',
+        primaryBorderColor: '#4ECDC4',
+        lineColor: '#718096',
+        secondaryColor: '#FFE66D',
+        tertiaryColor: '#FFB5C5',
+        fontFamily: 'Plus Jakarta Sans, sans-serif'
+      },
+      flowchart: {
+        htmlLabels: true,
+        curve: 'basis',
+        nodeSpacing: 50,
+        rankSpacing: 60,
+        padding: 15
+      }
+    });
+  </script>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>小小探索家</h1>
+      <p>功能流程图 · Feature Flowcharts</p>
+    </header>
+
+    <!-- Module Overview Flowchart -->
+    <section class="diagram-card module-flow">
+      <h2>📱 App 模块架构</h2>
+      <pre class="mermaid">
+flowchart TB
+    subgraph Launch["🚀 启动"]
+        A[ Splash Screen ] --> B[ Home Screen<br/>小小探索家 ]
+    end
+
+    subgraph Modules["📚 三大模块"]
+        B --> C[🔤 英语学习]
+        B --> D[🇨🇳 语文学习]
+        B --> E[🔢 数学学习]
+    end
+
+    subgraph English["英语模块"]
+        C --> C1[数字 1-20]
+        C --> C2[词汇闪卡]
+        C --> C3[配对游戏]
+    end
+
+    subgraph Chinese["语文模块"]
+        D --> D1[声母练习]
+        D --> D2[韵母练习]
+        D --> D3[四声调练习]
+        D --> D4[拼音配对]
+    end
+
+    subgraph Math["数学模块"]
+        E --> E1[数字认知]
+        E --> E2[加法运算]
+        E --> E3[减法运算]
+    end
+
+    style Launch fill:#E8F4F8,stroke:#4ECDC4
+    style Modules fill:#FFF9E6,stroke:#FFE66D
+    style English fill:#E8F4FF,stroke:#4A90D9
+    style Chinese fill:#FFE8E0,stroke:#FF7043
+    style Math fill:#E8EAFF,stroke:#5C6BC0
+      </pre>
+    </section>
+
+    <!-- Game Mode Flowchart -->
+    <section class="diagram-card game-flow">
+      <h2>🎮 游戏模式流程</h2>
+      <pre class="mermaid">
+flowchart LR
+    subgraph Entry["📍 入口"]
+        START([开始]) --> HOME[首页选择模块]
+    end
+
+    subgraph Learn["📖 学习模式"]
+        HOME --> LEARN[闪卡认读]
+        LEARN --> NAV{导航}
+        NAV -->|上一个| PREV[上一张]
+        NAV -->|下一个| NEXT[下一张]
+        NAV -->|听发音| SPEAK[🔊 语音朗读]
+        PREV -.-> LEARN
+        NEXT -.-> LEARN
+        SPEAK -.-> LEARN
+    end
+
+    subgraph Quiz["🎯 答题模式"]
+        LEARN --> QUIZ{选择模式}
+        QUIZ -->|探险| EXPLORE[🗺️ 认读模式]
+        QUIZ -->|练习| PRACTICE[📝 限时练习]
+        QUIZ -->|挑战| CHALLENGE[⏱️ 计时挑战]
+        QUIZ -->|极速| RAPID[⚡ 极速闯关<br/>5秒/题]
+    end
+
+    subgraph Match["🃏 配对游戏"]
+        NAV -->|开始配对| MATCH[配对游戏]
+        MATCH --> SHUFFLE[🔀 卡片洗牌]
+        SHUFFLE --> FLIP1[翻开第①张]
+        FLIP1 --> FLIP2[翻开第②张]
+        FLIP2 --> CHECK{配对判断}
+        CHECK -->|✅ 成功| SUCCESS[匹配+1]
+        CHECK -->|❌ 失败| FAIL[延迟翻转]
+        SUCCESS --> WIN{全部完成?}
+        FAIL -.->|1秒| RESET[恢复背面]
+        RESET -.-> MATCH
+        WIN -->|是| COMPLETE[🎉 完成!]
+        WIN -->|否| MATCH
+    end
+
+    subgraph Result["⭐ 评价系统"]
+        COMPLETE --> STARS{正确率}
+        STARS -->|≥80%| THREE[⭐⭐⭐ 三星]
+        STARS -->|≥50%| TWO[⭐⭐ 二星]
+        STARS -->|<50%| ONE[⭐ 一星]
+        THREE --> SAVE[💾 保存进度]
+        TWO --> SAVE
+        ONE --> SAVE
+    end
+
+    style Entry fill:#E8F4F8,stroke:#4ECDC4
+    style Learn fill:#E8F4FF,stroke:#4A90D9
+    style Quiz fill:#E8FFF0,stroke:#2ECC71
+    style Match fill:#FFF5E6,stroke:#FF9800
+    style Result fill:#FFE8F0,stroke:#E91E63
+      </pre>
+    </section>
+
+    <!-- Progress Flowchart -->
+    <section class="diagram-card progress-flow">
+      <h2>💾 进度与存储流程</h2>
+      <pre class="mermaid">
+flowchart TB
+    subgraph Init["⚙️ 初始化"]
+        START([启动]) --> LOAD[加载进度]
+        LOAD --> STARS[获取星星数]
+        STARS --> DISPLAY[显示首页]
+    end
+
+    subgraph Play["🎮 游戏过程"]
+        DISPLAY --> PLAY[玩游戏]
+        PLAY --> WIN[完成游戏]
+        WIN --> CALC[计算星级]
+        CALC --> COMPARE{与历史比较}
+        COMPARE -->|新分数更高| NEW[⭐ 更新进度]
+        COMPARE -->|分数相同或更低| KEEP[保持不变]
+    end
+
+    subgraph Save["💾 存储操作"]
+        NEW --> WRITE[SharedPreferences]
+        WRITE --> DONE[✅ 保存成功]
+        KEEP --> DONE
+    end
+
+    subgraph Reset["👨‍👩‍👧 家长模式"]
+        DONE --> RESET_BTN{家长重置?}
+        RESET_BTN -->|点击| CONFIRM[确认弹窗]
+        CONFIRM -->|确认| CLEAR[🗑️ 清除进度]
+        CONFIRM -->|取消| CANCEL[返回]
+        CLEAR --> RELOAD[重新加载]
+    end
+
+    subgraph Navigation["🗺️ 导航结构"]
+        HOME[首页] <--> LM[学习地图]
+        LM --> LEVEL[关卡选择]
+        LEVEL --> GAME[游戏界面]
+    end
+
+    style Init fill:#E8F4F8,stroke:#4ECDC4
+    style Play fill:#FFF9E6,stroke:#FFE66D
+    style Save fill:#E8FFF0,stroke:#2ECC71
+    style Reset fill:#FFE8E0,stroke:#FF7043
+    style Navigation fill:#E8EAFF,stroke:#5C6BC0
+      </pre>
+    </section>
+
+    <footer>
+      小小探索家 v1.0.0 · Flutter + Dart + Mermaid
+    </footer>
+  </div>
+</body>
+</html>

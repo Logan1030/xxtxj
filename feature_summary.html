@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>小小探索家 - 功能汇总</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #E8F4F8;
+      --card: #FFFBF5;
+      --pink: #FFB5C5;
+      --mint: #B8E8D2;
+      --lavender: #D4C5F9;
+      --peach: #FFDAB3;
+      --cobalt: #4A90D9;
+      --text: #2D3748;
+      --text-light: #718096;
+      --shadow: rgba(0,0,0,0.08);
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    .page {
+      min-height: 100vh;
+      padding: clamp(1.5rem, 4vw, 4rem);
+      display: flex;
+      flex-direction: column;
+      gap: clamp(1rem, 3vh, 2rem);
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      padding: clamp(1rem, 3vh, 2rem) 0;
+    }
+    .header h1 {
+      font-size: clamp(2rem, 6vw, 3.5rem);
+      font-weight: 800;
+      background: linear-gradient(135deg, #FF6B6B, #4ECDC4, #FFE66D);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+    }
+    .header p {
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      color: var(--text-light);
+      font-weight: 500;
+    }
+
+    /* Module Cards Grid */
+    .modules {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+      gap: clamp(1rem, 2vw, 1.5rem);
+    }
+
+    .module-card {
+      background: var(--card);
+      border-radius: clamp(1rem, 3vw, 1.5rem);
+      padding: clamp(1.25rem, 3vw, 2rem);
+      box-shadow: 0 4px 24px var(--shadow);
+      transition: transform 0.3s ease;
+    }
+    .module-card:hover {
+      transform: translateY(-4px);
+    }
+    .module-card.english { border-top: 6px solid var(--cobalt); }
+    .module-card.chinese { border-top: 6px solid #FF7043; }
+    .module-card.math { border-top: 6px solid #5C6BC0; }
+
+    .module-emoji {
+      font-size: clamp(2.5rem, 5vw, 3.5rem);
+      margin-bottom: 0.75rem;
+    }
+    .module-title {
+      font-size: clamp(1.25rem, 3vw, 1.5rem);
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    .module-subtitle {
+      font-size: clamp(0.8rem, 1.5vw, 0.95rem);
+      color: var(--text-light);
+      margin-bottom: 1rem;
+    }
+    .module-features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .module-features li {
+      font-size: clamp(0.8rem, 1.5vw, 0.9rem);
+      padding: 0.4rem 0.8rem;
+      border-radius: 2rem;
+      font-weight: 500;
+    }
+    .english li { background: rgba(74,144,217,0.15); color: var(--cobalt); }
+    .chinese li { background: rgba(255,112,67,0.15); color: #FF7043; }
+    .math li { background: rgba(92,107,192,0.15); color: #5C6BC0; }
+
+    /* Common Features Section */
+    .common-section {
+      background: var(--card);
+      border-radius: clamp(1rem, 3vw, 1.5rem);
+      padding: clamp(1.5rem, 4vw, 2.5rem);
+      box-shadow: 0 4px 24px var(--shadow);
+    }
+    .common-section h2 {
+      font-size: clamp(1.25rem, 3vw, 1.75rem);
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: var(--text);
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 140px), 1fr));
+      gap: clamp(0.75rem, 2vw, 1.25rem);
+    }
+    .feature-item {
+      text-align: center;
+      padding: clamp(1rem, 2vw, 1.5rem) 0.5rem;
+      border-radius: 1rem;
+      background: var(--bg);
+    }
+    .feature-item .icon {
+      font-size: clamp(2rem, 4vw, 2.5rem);
+      margin-bottom: 0.5rem;
+    }
+    .feature-item .label {
+      font-size: clamp(0.75rem, 1.5vw, 0.875rem);
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    /* Architecture Badge */
+    .arch-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: linear-gradient(135deg, var(--lavender), var(--pink));
+      padding: 0.5rem 1rem;
+      border-radius: 2rem;
+      font-size: clamp(0.7rem, 1.2vw, 0.8rem);
+      font-weight: 600;
+      color: var(--text);
+      margin-top: 1rem;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 1rem;
+      color: var(--text-light);
+      font-size: clamp(0.75rem, 1.2vw, 0.85rem);
+    }
+
+    @media (max-width: 600px) {
+      .modules { grid-template-columns: 1fr; }
+      .features-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .module-card { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <!-- Header -->
+    <header class="header">
+      <h1>小小探索家</h1>
+      <p>幼儿园全科学习App · 功能一览</p>
+      <div class="arch-badge">
+        <span>📱</span> Flutter + Dart
+      </div>
+    </header>
+
+    <!-- Three Module Cards -->
+    <section class="modules">
+      <!-- English Module -->
+      <article class="module-card english">
+        <div class="module-emoji">🔤</div>
+        <h3 class="module-title">英语学习</h3>
+        <p class="module-subtitle">English Learning</p>
+        <ul class="module-features">
+          <li>数字 1-20</li>
+          <li>颜色 · 动物 · 食物</li>
+          <li>身体 · 衣物 · 交通工具</li>
+          <li>自然 · 家庭 · 情绪</li>
+          <li>动作 · 形状 · 时间</li>
+        </ul>
+      </article>
+
+      <!-- Chinese Module -->
+      <article class="module-card chinese">
+        <div class="module-emoji">🇨🇳</div>
+        <h3 class="module-title">语文学习</h3>
+        <p class="module-subtitle">Chinese Pinyin</p>
+        <ul class="module-features">
+          <li>声母 23个</li>
+          <li>韵母 24个</li>
+          <li>整体认读音节</li>
+          <li>四声调练习</li>
+          <li>拼音配对游戏</li>
+        </ul>
+      </article>
+
+      <!-- Math Module -->
+      <article class="module-card math">
+        <div class="module-emoji">🔢</div>
+        <h3 class="module-title">数学学习</h3>
+        <p class="module-subtitle">Math Adventures</p>
+        <ul class="module-features">
+          <li>数字认知 1-20</li>
+          <li>加法运算</li>
+          <li>减法运算</li>
+          <li>探险 / 练习 / 挑战</li>
+          <li>极速闯关模式</li>
+        </ul>
+      </article>
+    </section>
+
+    <!-- Common Features -->
+    <section class="common-section">
+      <h2>通用功能</h2>
+      <div class="features-grid">
+        <div class="feature-item">
+          <div class="icon">⭐</div>
+          <div class="label">星级评分</div>
+        </div>
+        <div class="feature-item">
+          <div class="icon">💾</div>
+          <div class="label">进度保存</div>
+        </div>
+        <div class="feature-item">
+          <div class="icon">🔊</div>
+          <div class="label">语音朗读</div>
+        </div>
+        <div class="feature-item">
+          <div class="icon">🎴</div>
+          <div class="label">闪卡学习</div>
+        </div>
+        <div class="feature-item">
+          <div class="icon">🎮</div>
+          <div class="label">配对游戏</div>
+        </div>
+        <div class="feature-item">
+          <div class="icon">🎉</div>
+          <div class="label">庆祝动画</div>
+        </div>
+        <div class="feature-item">
+          <div class="icon">👨‍👩‍👧</div>
+          <div class="label">家长模式</div>
+        </div>
+        <div class="feature-item">
+          <div class="icon">🗺️</div>
+          <div class="label">学习地图</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      Version 1.0.0 · Built with Flutter
+    </footer>
+  </div>
+</body>
+</html>

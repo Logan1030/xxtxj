@@ -1,0 +1,35 @@
+flowchart TB
+    subgraph Launch["🚀 启动"]
+        A[ Splash Screen ] --> B[ Home Screen<br/>小小探索家 ]
+    end
+
+    subgraph Modules["📚 三大模块"]
+        B --> C[🔤 英语学习]
+        B --> D[🇨🇳 语文学习]
+        B --> E[🔢 数学学习]
+    end
+
+    subgraph English["英语模块"]
+        C --> C1[数字 1-20]
+        C --> C2[词汇闪卡]
+        C --> C3[配对游戏]
+    end
+
+    subgraph Chinese["语文模块"]
+        D --> D1[声母练习]
+        D --> D2[韵母练习]
+        D --> D3[四声调练习]
+        D --> D4[拼音配对]
+    end
+
+    subgraph Math["数学模块"]
+        E --> E1[数字认知]
+        E --> E2[加法运算]
+        E --> E3[减法运算]
+    end
+
+    style Launch fill:#E8F4F8,stroke:#4ECDC4
+    style Modules fill:#FFF9E6,stroke:#FFE66D
+    style English fill:#E8F4FF,stroke:#4A90D9
+    style Chinese fill:#FFE8E0,stroke:#FF7043
+    style Math fill:#E8EAFF,stroke:#5C6BC0

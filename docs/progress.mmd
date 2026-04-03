@@ -1,0 +1,39 @@
+flowchart TB
+    subgraph Init["⚙️ 初始化"]
+        START([启动]) --> LOAD[加载进度]
+        LOAD --> STARS[获取星星数]
+        STARS --> DISPLAY[显示首页]
+    end
+
+    subgraph Play["🎮 游戏过程"]
+        DISPLAY --> PLAY[玩游戏]
+        PLAY --> WIN[完成游戏]
+        WIN --> CALC[计算星级]
+        CALC --> COMPARE{与历史比较}
+        COMPARE -->|新分数更高| NEW[⭐ 更新进度]
+        COMPARE -->|分数相同或更低| KEEP[保持不变]
+    end
+
+    subgraph Save["💾 存储操作"]
+        NEW --> WRITE[SharedPreferences]
+        WRITE --> DONE[✅ 保存成功]
+        KEEP --> DONE
+    end
+
+    subgraph Reset["👨‍👩‍👧 家长模式"]
+        DONE --> RESET_BTN{家长重置?}
+        RESET_BTN -->|点击| CONFIRM[确认弹窗]
+        CONFIRM -->|确认| CLEAR[🗑️ 清除进度]
+        CONFIRM -->|取消| CANCEL[返回]
+        CLEAR --> RELOAD[重新加载]
+    end
+
+    Init -..-> Play
+    Play -..-> Save
+    Save -..-> Reset
+    Reset -..-> Init
+
+    style Init fill:#E8F4F8,stroke:#4ECDC4
+    style Play fill:#FFF9E6,stroke:#FFE66D
+    style Save fill:#E8FFF0,stroke:#2ECC71
+    style Reset fill:#FFE8E0,stroke:#FF7043

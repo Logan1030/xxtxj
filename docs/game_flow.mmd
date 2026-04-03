@@ -1,0 +1,54 @@
+flowchart LR
+    subgraph Entry["📍 入口"]
+        START([开始]) --> HOME[首页选择模块]
+    end
+
+    subgraph Learn["📖 学习模式"]
+        HOME --> LEARN[闪卡认读]
+        LEARN --> NAV{导航}
+        NAV -->|上一个| PREV[上一张]
+        NAV -->|下一个| NEXT[下一张]
+        NAV -->|听发音| SPEAK[🔊 语音朗读]
+        PREV -.-> LEARN
+        NEXT -.-> LEARN
+        SPEAK -.-> LEARN
+    end
+
+    subgraph Quiz["🎯 答题模式"]
+        LEARN --> QUIZ{选择模式}
+        QUIZ -->|探险| EXPLORE[🗺️ 认读模式]
+        QUIZ -->|练习| PRACTICE[📝 限时练习]
+        QUIZ -->|挑战| CHALLENGE[⏱️ 计时挑战]
+        QUIZ -->|极速| RAPID[⚡ 极速闯关<br/>5秒/题]
+    end
+
+    subgraph Match["🃏 配对游戏"]
+        NAV -->|开始配对| MATCH[配对游戏]
+        MATCH --> SHUFFLE[🔀 卡片洗牌]
+        SHUFFLE --> FLIP1[翻开第①张]
+        FLIP1 --> FLIP2[翻开第②张]
+        FLIP2 --> CHECK{配对判断}
+        CHECK -->|✅ 成功| SUCCESS[匹配+1]
+        CHECK -->|❌ 失败| FAIL[延迟翻转]
+        SUCCESS --> WIN{全部完成?}
+        FAIL -.->|1秒| RESET[恢复背面]
+        RESET -.-> MATCH
+        WIN -->|是| COMPLETE[🎉 完成!]
+        WIN -->|否| MATCH
+    end
+
+    subgraph Result["⭐ 评价系统"]
+        COMPLETE --> STARS{正确率}
+        STARS -->|≥80%| THREE[⭐⭐⭐ 三星]
+        STARS -->|≥50%| TWO[⭐⭐ 二星]
+        STARS -->|<50%| ONE[⭐ 一星]
+        THREE --> SAVE[💾 保存进度]
+        TWO --> SAVE
+        ONE --> SAVE
+    end
+
+    style Entry fill:#E8F4F8,stroke:#4ECDC4
+    style Learn fill:#E8F4FF,stroke:#4A90D9
+    style Quiz fill:#E8FFF0,stroke:#2ECC71
+    style Match fill:#FFF5E6,stroke:#FF9800
+    style Result fill:#FFE8F0,stroke:#E91E63
