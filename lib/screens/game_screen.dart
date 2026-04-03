@@ -4,7 +4,7 @@ import '../app.dart';
 import '../data/words_data.dart';
 import '../models/word_model.dart';
 import '../services/audio_service.dart';
-import '../utils/storage_helper.dart';
+import '../services/progress_service.dart';
 import '../widgets/flashcard_widget.dart';
 import '../widgets/matching_card.dart';
 import '../widgets/star_rating.dart';
@@ -378,10 +378,8 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   Future<void> _saveProgress(int stars) async {
-    final currentStars = await StorageHelper.getStars(widget.category);
-    if (stars > currentStars) {
-      await StorageHelper.saveStars(widget.category, stars);
-    }
+    // 使用 ProgressService 与 HomeScreen 保持一致
+    await ProgressService.saveLevelStars(widget.category, stars);
   }
 
   void _showCompletionDialog(int stars) {
