@@ -40,9 +40,12 @@ class StorageHelper {
   static Future<void> _updateTotalStars() async {
     await init();
     int total = 0;
-    final categories = ['colors', 'numbers', 'animals', 'foods', 'body'];
-    for (var cat in categories) {
-      total += _prefs?.getInt('$_starsKeyPrefix$cat') ?? 0;
+    // 获取所有以 stars_ 开头的键来计算总数，支持任意类别
+    final keys = _prefs?.getKeys() ?? {};
+    for (var key in keys) {
+      if (key.startsWith(_starsKeyPrefix)) {
+        total += _prefs?.getInt(key) ?? 0;
+      }
     }
     await _prefs?.setInt(_totalStarsKey, total);
   }
