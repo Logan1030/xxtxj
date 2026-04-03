@@ -162,5 +162,31 @@ void main() {
         expect(await StorageHelper.getStars(''), 1);
       });
     });
+
+    group('新类别支持 (Bug修复验证)', () {
+      test('should calculate total stars for new categories (english/chinese/math/pinyin)', () async {
+        // 修复前: _updateTotalStars() 硬编码了5个旧类别
+        // 修复后: 动态获取所有 stars_ 开头的键
+        await StorageHelper.saveStars('english', 3);
+        await StorageHelper.saveStars('chinese', 2);
+        await StorageHelper.saveStars('math', 3);
+        await StorageHelper.saveStars('pinyin', 2);
+        // 旧类别也兼容
+        await StorageHelper.saveStars('colors', 1);
+
+        final total = await StorageHelper.getTotalStars();
+        expect(total, 11); // 3+2+3+2+1 = 11
+      });
+
+      test('should calculate total stars for mixed old and new categories', () async {
+        await StorageHelper.saveStars('english', 3);
+        await StorageHelper.saveStars('chinese', 2);
+        await StorageHelper.saveStars('colors', 1);
+        await StorageHelper.saveStars('numbers', 2);
+
+        final total = await StorageHelper.getTotalStars();
+        expect(total, 8); // 3+2+1+2 = 8
+      });
+    });
   });
 }
